@@ -192,15 +192,19 @@ const Index = () => {
       {/* Footer */}
       <footer className="container mt-10 flex items-center justify-between border-t border-white/5 pt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
         <span>{GENRES.length} genres · {TRACKS.length} tracks · 16 steps</span>
-        <div className="flex items-center gap-2">
+        <a
+          href="https://simorkadesigns.com/"
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-2 transition-opacity hover:opacity-100"
+        >
           <span className="text-muted-foreground/50">Built by</span>
           <img
             src={simorkaLogo}
             alt="Simorka Designs"
             className="h-4 w-auto opacity-60 transition-opacity hover:opacity-100"
-            title="Simorka Designs"
           />
-        </div>
+        </a>
       </footer>
     </div>
   );
