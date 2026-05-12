@@ -124,7 +124,6 @@ const Index = () => {
           swing={seq.state.swing}
           step={seq.state.step}
           onTogglePlay={seq.togglePlay}
-          onStop={seq.stop}
           onClear={handleClear}
           onRandomize={handleRandomize}
           onSave={handleSave}

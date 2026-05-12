@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, Square, Eraser, Dice5, Save, LayoutGrid, X } from "lucide-react";
+import { Play, Pause, Eraser, Dice5, Save, LayoutGrid, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import type { Genre } from "@/data/genres";
@@ -10,7 +10,6 @@ interface TransportProps {
   swing: number;
   step: number;
   onTogglePlay: () => void;
-  onStop: () => void;
   onClear: () => void;
   onRandomize: () => void;
   onSave: () => void;
@@ -28,7 +27,6 @@ export function Transport({
   swing,
   step,
   onTogglePlay,
-  onStop,
   onClear,
   onRandomize,
   onSave,
@@ -61,16 +59,6 @@ export function Transport({
             aria-label={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? <Pause className="h-6 w-6" fill="currentColor" /> : <Play className="h-6 w-6 translate-x-0.5" fill="currentColor" />}
-          </motion.button>
-
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.92 }}
-            onClick={onStop}
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition-colors hover:text-foreground"
-            aria-label="Stop"
-          >
-            <Square className="h-4 w-4" fill="currentColor" />
           </motion.button>
 
           <div className="ml-1 flex flex-col gap-1">
