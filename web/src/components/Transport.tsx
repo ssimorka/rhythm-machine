@@ -84,7 +84,7 @@ export function Transport({
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
               Tempo
             </span>
-            <span className="font-mono text-xl font-bold tabular-nums leading-none text-orange text-glow-orange sm:text-2xl">
+            <span className="font-mono text-sm font-bold tabular-nums leading-none text-orange text-glow-orange">
               {bpm}
               <span className="ml-1 text-[10px] font-normal text-muted-foreground">BPM</span>
             </span>
