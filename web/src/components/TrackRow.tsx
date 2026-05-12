@@ -53,12 +53,12 @@ function TrackRowImpl({
   return (
     <div
       className={cn(
-        "flex flex-col gap-1.5 px-2 py-2 transition-opacity sm:grid sm:grid-cols-[160px_1fr] sm:items-center sm:gap-3 sm:px-3 sm:py-2 lg:grid-cols-[200px_1fr]",
+        "flex flex-col gap-1.5 px-2 py-2 transition-opacity sm:grid sm:grid-cols-[240px_1fr] sm:items-center sm:gap-3 sm:px-3 sm:py-2 lg:grid-cols-[260px_1fr]",
         dimmed && "opacity-45",
       )}
     >
-      {/* Label / controls */}
-      <div className="flex items-center gap-2">
+      {/* Label / controls / volume — one row on all sizes */}
+      <div className="flex items-center gap-1.5">
         <button
           type="button"
           onClick={onPreview}
@@ -81,6 +81,18 @@ function TrackRowImpl({
             {track.label}
           </span>
         </button>
+
+        {/* Volume slider — visible on all sizes */}
+        <div className="w-16 shrink-0 sm:w-20">
+          <Slider
+            min={-30}
+            max={6}
+            step={1}
+            value={[state.volume]}
+            onValueChange={(v: number[]) => onVolume(v[0] ?? 0)}
+            aria-label={`${track.label} volume`}
+          />
+        </div>
 
         <div className="flex items-center gap-1">
           <motion.button
@@ -116,30 +128,18 @@ function TrackRowImpl({
         </div>
       </div>
 
-      {/* Steps + volume */}
-      <div className="flex items-center gap-3">
-        <div className="grid flex-1 grid-cols-16 gap-[3px] sm:gap-1.5">
-          {steps.map((on, i) => (
-            <StepButton
-              key={i}
-              active={on}
-              current={currentStep === i}
-              beat={i % 4 === 0}
-              rowAccent={(Math.floor(i / 4) % 2) === 1}
-              onToggle={() => onToggleStep(i)}
-            />
-          ))}
-        </div>
-        <div className="hidden w-24 shrink-0 md:block">
-          <Slider
-            min={-30}
-            max={6}
-            step={1}
-            value={[state.volume]}
-            onValueChange={(v: number[]) => onVolume(v[0] ?? 0)}
-            aria-label={`${track.label} volume`}
+      {/* Steps */}
+      <div className="grid grid-cols-16 gap-[3px] sm:gap-1.5">
+        {steps.map((on, i) => (
+          <StepButton
+            key={i}
+            active={on}
+            current={currentStep === i}
+            beat={i % 4 === 0}
+            rowAccent={(Math.floor(i / 4) % 2) === 1}
+            onToggle={() => onToggleStep(i)}
           />
-        </div>
+        ))}
       </div>
     </div>
   );

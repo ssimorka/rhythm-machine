@@ -31,7 +31,7 @@ export function Transport({
   onSwing,
 }: TransportProps) {
   return (
-    <div className="panel flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-6">
+    <div className="panel flex flex-col gap-4 p-4 md:flex-row md:items-center md:gap-6">
       {/* Big play button */}
       <div className="flex items-center gap-3">
         <motion.button
@@ -74,10 +74,10 @@ export function Transport({
         </div>
       </div>
 
-      <div className="hidden h-12 w-px bg-white/5 sm:block" />
+      <div className="hidden h-12 w-px bg-white/5 md:block" />
 
-      {/* BPM + Swing: side-by-side on mobile, independent items in flex row on sm+ */}
-      <div className="grid grid-cols-2 gap-3 sm:contents sm:gap-0">
+      {/* BPM + Swing: side-by-side on mobile, independent items in flex row on md+ */}
+      <div className="grid grid-cols-2 gap-3 md:contents md:gap-0">
         {/* BPM */}
         <div className="flex min-w-0 flex-col gap-2 sm:flex-1">
           <div className="flex items-center justify-between">
@@ -102,7 +102,7 @@ export function Transport({
         </div>
       </div>
 
-      <div className="hidden h-12 w-px bg-white/5 sm:block" />
+      <div className="hidden h-12 w-px bg-white/5 md:block" />
 
       {/* Action cluster */}
       <div className="grid grid-cols-3 gap-2">
@@ -129,10 +129,10 @@ function ActionButton({
       whileTap={{ scale: 0.94 }}
       whileHover={{ y: -1 }}
       onClick={onClick}
-      className="flex h-10 w-full items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2 text-[12px] font-semibold text-foreground/85 transition-colors hover:border-white/20 hover:bg-white/[0.06] sm:px-3"
+      className="flex h-10 w-full items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-3 text-[12px] font-semibold text-foreground/85 transition-colors hover:border-white/20 hover:bg-white/[0.06]"
     >
       {icon}
-      <span className="hidden sm:inline">{label}</span>
+      <span className="hidden md:inline">{label}</span>
     </motion.button>
   );
 }

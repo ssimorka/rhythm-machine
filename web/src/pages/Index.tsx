@@ -142,26 +142,21 @@ const Index = () => {
             <div className="sm:overflow-x-auto sm:scrollbar-thin">
               <div className="sm:min-w-[520px]">
                 {/* Step ruler — only visible sm+ */}
-                <div className="hidden grid-cols-[100px_1fr] items-center gap-3 border-b border-white/5 bg-black/20 px-3 py-2 sm:grid sm:grid-cols-[160px_1fr] lg:grid-cols-[200px_1fr]">
+                <div className="hidden grid-cols-[240px_1fr] items-center gap-3 border-b border-white/5 bg-black/20 px-3 py-2 sm:grid lg:grid-cols-[260px_1fr]">
                   <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
                     Tracks · {TRACKS.length}
                   </span>
-                  <div className="flex items-center gap-3">
-                    <div className="grid flex-1 grid-cols-16 gap-[3px] sm:gap-1.5">
-                      {Array.from({ length: 16 }, (_, i) => (
-                        <div
-                          key={i}
-                          className={`flex h-5 items-center justify-center font-mono text-[10px] tabular-nums ${
-                            seq.state.step === i ? "text-orange text-glow-orange" : "text-muted-foreground/60"
-                          } ${i % 4 === 0 ? "font-bold" : ""}`}
-                        >
-                          {i + 1}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="hidden w-24 shrink-0 text-right font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground md:block">
-                      Vol
-                    </div>
+                  <div className="grid grid-cols-16 gap-[3px] sm:gap-1.5">
+                    {Array.from({ length: 16 }, (_, i) => (
+                      <div
+                        key={i}
+                        className={`flex h-5 items-center justify-center font-mono text-[10px] tabular-nums ${
+                          seq.state.step === i ? "text-orange text-glow-orange" : "text-muted-foreground/60"
+                        } ${i % 4 === 0 ? "font-bold" : ""}`}
+                      >
+                        {i + 1}
+                      </div>
+                    ))}
                   </div>
                 </div>
 
