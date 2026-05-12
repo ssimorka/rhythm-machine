@@ -53,7 +53,7 @@ function TrackRowImpl({
   return (
     <div
       className={cn(
-        "grid grid-cols-[100px_1fr] items-center gap-2 px-2 py-1.5 transition-opacity sm:grid-cols-[160px_1fr] sm:gap-3 sm:px-3 sm:py-2 lg:grid-cols-[200px_1fr]",
+        "flex flex-col gap-1.5 px-2 py-2 transition-opacity sm:grid sm:grid-cols-[160px_1fr] sm:items-center sm:gap-3 sm:px-3 sm:py-2 lg:grid-cols-[200px_1fr]",
         dimmed && "opacity-45",
       )}
     >
@@ -62,7 +62,7 @@ function TrackRowImpl({
         <button
           type="button"
           onClick={onPreview}
-          className="group flex min-w-0 flex-1 items-center gap-1.5 rounded-lg border border-white/5 bg-white/[0.02] px-2 py-1 text-left transition-colors hover:bg-white/[0.05] sm:gap-2 sm:px-2.5 sm:py-1.5"
+          className="group flex min-w-0 flex-1 items-center gap-1.5 rounded-lg border border-white/5 bg-white/[0.02] px-2 py-1 text-left transition-colors hover:bg-white/[0.05] sm:px-2.5 sm:py-1.5"
           title={`Preview ${track.label}`}
         >
           <span
@@ -77,11 +77,7 @@ function TrackRowImpl({
                     : "Synth voice"
             }
           />
-          {/* Short name on mobile, full label on sm+ */}
-          <span className="truncate font-mono text-[10px] font-bold uppercase tracking-widest text-foreground/90 sm:hidden">
-            {track.short}
-          </span>
-          <span className="hidden truncate text-[13px] font-semibold tracking-wide text-foreground/90 sm:inline">
+          <span className="truncate text-[12px] font-semibold tracking-wide text-foreground/90 sm:text-[13px]">
             {track.label}
           </span>
         </button>

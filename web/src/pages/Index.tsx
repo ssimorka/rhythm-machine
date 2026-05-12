@@ -138,9 +138,9 @@ const Index = () => {
 
           {/* Sequencer grid */}
           <div className="panel overflow-hidden">
-            {/* Horizontal scroll wrapper — lets the grid scroll on narrow screens */}
-            <div className="overflow-x-auto scrollbar-thin">
-              <div className="min-w-[520px]">
+            {/* Horizontal scroll on sm+ only; mobile uses stacked track layout */}
+            <div className="sm:overflow-x-auto sm:scrollbar-thin">
+              <div className="sm:min-w-[520px]">
                 {/* Step ruler — only visible sm+ */}
                 <div className="hidden grid-cols-[100px_1fr] items-center gap-3 border-b border-white/5 bg-black/20 px-3 py-2 sm:grid sm:grid-cols-[160px_1fr] lg:grid-cols-[200px_1fr]">
                   <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">

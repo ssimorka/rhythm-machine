@@ -48,7 +48,7 @@ export function GenreSelector({ activeId, onPick }: GenreSelectorProps) {
                   {g.bpm}
                 </span>
               </span>
-              <span className="line-clamp-1 text-[11px] text-muted-foreground">{g.description}</span>
+              <p className="hidden line-clamp-1 text-[11px] text-muted-foreground sm:block">{g.description}</p>
             </motion.button>
           );
         })}
