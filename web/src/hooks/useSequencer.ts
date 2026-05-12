@@ -136,7 +136,15 @@ export function useSequencer() {
 
   const clearPattern = useCallback(() => {
     setPattern(emptyPattern());
-  }, []);
+    // Reset all track volumes, mutes and solos back to defaults
+    const defaults = defaultTracks();
+    setTracks(defaults);
+    for (const t of TRACKS) {
+      engine.setVolume(t.id, 0);
+      engine.setMute(t.id, false);
+      engine.setSolo(t.id, false);
+    }
+  }, [engine]);
 
   const randomize = useCallback(() => {
     setPattern((prev) => {

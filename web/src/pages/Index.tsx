@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Disc3 } from "lucide-react";
 import { useSequencer } from "@/hooks/useSequencer";
-import { TRACKS } from "@/data/tracks";
+import { TRACKS, type DrumId } from "@/data/tracks";
 import { Transport } from "@/components/Transport";
 import { TrackRow } from "@/components/TrackRow";
 import { GenreSelector } from "@/components/GenreSelector";
@@ -36,21 +36,31 @@ const Index = () => {
 
   const handleSave = useCallback(() => {
     const name = activeGenre ? `${activeGenre.name} edit` : `Pattern ${new Date().toLocaleTimeString()}`;
+    const volumes: Record<string, number> = {};
+    for (const [id, state] of Object.entries(seq.state.tracks)) {
+      volumes[id] = state.volume;
+    }
     addPattern({
       name,
       bpm: seq.state.bpm,
       swing: seq.state.swing,
       pattern: seq.state.pattern,
+      volumes,
     });
     setSavedKey((k) => k + 1);
     toast.success("Pattern saved", { description: "Stored in this browser." });
-  }, [activeGenre, seq.state.bpm, seq.state.swing, seq.state.pattern]);
+  }, [activeGenre, seq.state.bpm, seq.state.swing, seq.state.pattern, seq.state.tracks]);
 
   const handleLoadSaved = useCallback(
     (p: SavedPattern) => {
       seq.setPattern(p.pattern);
       seq.setBpm(p.bpm);
       seq.setSwing(p.swing);
+      if (p.volumes) {
+        for (const [id, vol] of Object.entries(p.volumes)) {
+          seq.setTrackVolume(id as DrumId, vol);
+        }
+      }
       toast.success(`Loaded ${p.name}`);
     },
     [seq],

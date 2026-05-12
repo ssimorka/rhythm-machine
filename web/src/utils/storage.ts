@@ -8,6 +8,8 @@ export interface SavedPattern {
   bpm: number;
   swing: number;
   pattern: Pattern;
+  /** Per-track volume overrides in dB. Optional for backwards compat with old saves. */
+  volumes?: Partial<Record<string, number>>;
   createdAt: number;
 }
 
