@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dark graphite by default — this is a single dark-theme app */
+    --background: 240 6% 7%;
+    --foreground: 30 10% 96%;
+
+    --card: 240 6% 10%;
+    --card-foreground: 30 10% 96%;
+
+    --popover: 240 6% 8%;
+    --popover-foreground: 30 10% 96%;
+
+    --primary: 22 94% 53%;
+    --primary-foreground: 240 6% 7%;
+
+    --secondary: 240 5% 14%;
+    --secondary-foreground: 30 10% 96%;
+
+    --muted: 240 5% 14%;
+    --muted-foreground: 240 5% 60%;
+
+    --accent: 22 94% 53%;
+    --accent-foreground: 240 6% 7%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 30 10% 96%;
+
+    --border: 240 5% 18%;
+    --input: 240 5% 16%;
+    --ring: 22 94% 53%;
+
+    --radius: 0.75rem;
+
+    /* Accent ramp */
+    --rm-orange: 22 94% 53%;
+    --rm-orange-soft: 22 94% 60%;
+    --rm-graphite: 240 6% 7%;
+    --rm-panel: 240 6% 10%;
+    --rm-panel-2: 240 6% 13%;
+    --rm-line: 240 5% 18%;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, hsl(22 80% 30% / 0.18), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, hsl(240 40% 20% / 0.25), transparent 60%),
+      hsl(var(--background));
+  }
+
+  /* Inter / mono helpers */
+  .font-mono {
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply rounded-2xl border border-white/5 bg-[hsl(var(--rm-panel))]/80 backdrop-blur-sm;
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.04),
+      0 1px 0 hsl(0 0% 0% / 0.4),
+      0 20px 40px -20px hsl(0 0% 0% / 0.5);
+  }
+  .panel-inset {
+    @apply rounded-xl border border-black/40 bg-[hsl(var(--rm-graphite))];
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 0% / 0.6),
+      inset 0 -1px 0 hsl(0 0% 100% / 0.03);
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-white/5 bg-white/[0.03] px-2.5 py-1 text-[11px] font-medium text-muted-foreground;
+  }
+  .led {
+    @apply h-2 w-2 rounded-full;
+    background: hsl(var(--rm-orange));
+    box-shadow:
+      0 0 0 2px hsl(var(--rm-orange) / 0.15),
+      0 0 12px hsl(var(--rm-orange) / 0.7);
+  }
+  .led-off {
+    @apply h-2 w-2 rounded-full bg-white/10;
+  }
+  .knob-shadow {
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.05),
+      0 8px 24px -10px hsl(0 0% 0% / 0.6);
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-white/10;
+  }
+}
+
+@layer utilities {
+  .text-glow-orange {
+    text-shadow: 0 0 12px hsl(var(--rm-orange) / 0.6);
+  }
+  .ring-glow-orange {
+    box-shadow:
+      0 0 0 1px hsl(var(--rm-orange) / 0.6),
+      0 0 24px hsl(var(--rm-orange) / 0.45),
+      inset 0 1px 0 hsl(0 0% 100% / 0.15);
+  }
+}
+
+/* Subtle pulse for the playhead LED */
+@keyframes rm-pulse {
+  0%,
+  100% {
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+.animate-rm-pulse {
+  animation: rm-pulse 1.4s ease-in-out infinite;
+}
