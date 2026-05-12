@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Disc3 } from "lucide-react";
 import { useSequencer } from "@/hooks/useSequencer";
-import { TRACKS, type DrumId } from "@/data/tracks";
+import { TRACKS } from "@/data/tracks";
 import { Transport } from "@/components/Transport";
 import { TrackRow } from "@/components/TrackRow";
 import { GenreSelector } from "@/components/GenreSelector";
@@ -56,20 +56,18 @@ const Index = () => {
 
   const handleLoadSaved = useCallback(
     (p: SavedPattern) => {
-      seq.setPattern(p.pattern);
-      seq.setBpm(p.bpm);
-      seq.setSwing(p.swing);
-      if (p.volumes) {
-        for (const [id, vol] of Object.entries(p.volumes)) {
-          seq.setTrackVolume(id as DrumId, vol);
-        }
+      seq.scheduleLoad({
+        pattern: p.pattern,
+        bpm: p.bpm,
+        swing: p.swing,
+        volumes: p.volumes,
+        mutes: p.mutes,
+      });
+      if (seq.state.isPlaying) {
+        toast.info(`Queued: ${p.name}`, { description: "Loads at the next bar." });
+      } else {
+        toast.success(`Loaded ${p.name}`);
       }
-      if (p.mutes) {
-        for (const [id, mute] of Object.entries(p.mutes)) {
-          seq.setTrackMute(id as DrumId, mute);
-        }
-      }
-      toast.success(`Loaded ${p.name}`);
     },
     [seq],
   );
