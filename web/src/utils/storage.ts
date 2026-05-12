@@ -10,6 +10,8 @@ export interface SavedPattern {
   pattern: Pattern;
   /** Per-track volume overrides in dB. Optional for backwards compat with old saves. */
   volumes?: Partial<Record<string, number>>;
+  /** Per-track mute flags. Optional for backwards compat with old saves. */
+  mutes?: Partial<Record<string, boolean>>;
   createdAt: number;
 }
 

@@ -202,6 +202,14 @@ export function useSequencer() {
     [engine],
   );
 
+  const setTrackMute = useCallback(
+    (id: DrumId, mute: boolean) => {
+      setTracks((prev) => ({ ...prev, [id]: { ...prev[id], mute } }));
+      engine.setMute(id, mute);
+    },
+    [engine],
+  );
+
   const toggleSolo = useCallback(
     (id: DrumId) => {
       setTracks((prev) => {
@@ -250,6 +258,7 @@ export function useSequencer() {
     randomize,
     loadGenre,
     setTrackVolume,
+    setTrackMute,
     toggleMute,
     toggleSolo,
     previewTrack,

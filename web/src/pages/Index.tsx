@@ -37,8 +37,10 @@ const Index = () => {
   const handleSave = useCallback(() => {
     const name = activeGenre ? `${activeGenre.name} edit` : `Pattern ${new Date().toLocaleTimeString()}`;
     const volumes: Record<string, number> = {};
+    const mutes: Record<string, boolean> = {};
     for (const [id, state] of Object.entries(seq.state.tracks)) {
       volumes[id] = state.volume;
+      mutes[id] = state.mute;
     }
     addPattern({
       name,
@@ -46,6 +48,7 @@ const Index = () => {
       swing: seq.state.swing,
       pattern: seq.state.pattern,
       volumes,
+      mutes,
     });
     setSavedKey((k) => k + 1);
     toast.success("Pattern saved", { description: "Stored in this browser." });
@@ -59,6 +62,11 @@ const Index = () => {
       if (p.volumes) {
         for (const [id, vol] of Object.entries(p.volumes)) {
           seq.setTrackVolume(id as DrumId, vol);
+        }
+      }
+      if (p.mutes) {
+        for (const [id, mute] of Object.entries(p.mutes)) {
+          seq.setTrackMute(id as DrumId, mute);
         }
       }
       toast.success(`Loaded ${p.name}`);
