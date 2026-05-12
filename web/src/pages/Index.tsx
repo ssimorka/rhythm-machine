@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import simorkaLogo from "@/assets/simorka-logo.png";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Disc3 } from "lucide-react";
@@ -191,7 +192,15 @@ const Index = () => {
       {/* Footer */}
       <footer className="container mt-10 flex items-center justify-between border-t border-white/5 pt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
         <span>{GENRES.length} genres · {TRACKS.length} tracks · 16 steps</span>
-        <span>Built for the dancefloor.</span>
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground/50">Built by</span>
+          <img
+            src={simorkaLogo}
+            alt="Simorka Designs"
+            className="h-4 w-auto opacity-60 transition-opacity hover:opacity-100"
+            title="Simorka Designs"
+          />
+        </div>
       </footer>
     </div>
   );
