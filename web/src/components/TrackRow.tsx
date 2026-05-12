@@ -62,7 +62,7 @@ function TrackRowImpl({
         <button
           type="button"
           onClick={onPreview}
-          className="group flex min-w-0 flex-1 items-center gap-1.5 rounded-lg border border-white/5 bg-white/[0.02] px-2 py-1 text-left transition-colors hover:bg-white/[0.05] sm:px-2.5 sm:py-1.5"
+          className="group flex w-28 shrink-0 items-center gap-1.5 rounded-lg border border-white/5 bg-white/[0.02] px-2 py-1 text-left transition-colors hover:bg-white/[0.05] sm:min-w-0 sm:flex-1 sm:px-2.5 sm:py-1.5"
           title={`Preview ${track.label}`}
         >
           <span
@@ -82,8 +82,8 @@ function TrackRowImpl({
           </span>
         </button>
 
-        {/* Volume slider — visible on all sizes */}
-        <div className="w-16 shrink-0 sm:w-20">
+        {/* Volume slider — wider on mobile since label is fixed-width */}
+        <div className="flex-1 sm:w-20 sm:flex-none">
           <Slider
             min={-30}
             max={6}
