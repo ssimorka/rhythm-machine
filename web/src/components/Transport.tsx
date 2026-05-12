@@ -76,24 +76,23 @@ export function Transport({
 
       <div className="hidden h-12 w-px bg-white/5 md:block" />
 
-      {/* BPM + Swing: side-by-side on mobile, independent items in flex row on md+ */}
-      <div className="grid grid-cols-2 gap-3 md:contents md:gap-0">
+      {/* BPM + Swing: stacked below md, independent flex items on md+ */}
+      <div className="flex flex-col gap-3 md:contents">
         {/* BPM */}
-        <div className="flex min-w-0 flex-col gap-2 sm:flex-1">
+        <div className="flex min-w-0 flex-col gap-2 md:flex-1">
           <div className="flex items-center justify-between">
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
               Tempo
             </span>
-            <span className="font-mono text-sm font-bold tabular-nums leading-none text-orange text-glow-orange">
-              {bpm}
-              <span className="ml-1 text-[10px] font-normal text-muted-foreground">BPM</span>
+            <span className="font-mono text-sm font-bold tabular-nums text-orange text-glow-orange">
+              {bpm} <span className="text-[10px] font-normal text-muted-foreground">BPM</span>
             </span>
           </div>
           <Slider min={60} max={200} step={1} value={[bpm]} onValueChange={(v: number[]) => onBpm(v[0] ?? bpm)} />
         </div>
 
         {/* Swing */}
-        <div className="flex flex-col gap-2 sm:w-44">
+        <div className="flex flex-col gap-2 md:w-44">
           <div className="flex items-center justify-between">
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Swing</span>
             <span className="font-mono text-sm tabular-nums text-foreground/90">{swing}%</span>
