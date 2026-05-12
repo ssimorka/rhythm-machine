@@ -1,14 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Disc3, Github } from "lucide-react";
+import { Disc3 } from "lucide-react";
 import { useSequencer } from "@/hooks/useSequencer";
 import { TRACKS } from "@/data/tracks";
 import { Transport } from "@/components/Transport";
 import { TrackRow } from "@/components/TrackRow";
 import { GenreSelector } from "@/components/GenreSelector";
-import { GenreInfo } from "@/components/GenreInfo";
-import { AIPrompt } from "@/components/AIPrompt";
 import { SavedPatterns } from "@/components/SavedPatterns";
 import { GENRES, getGenre, type Genre } from "@/data/genres";
 import { addPattern, type SavedPattern } from "@/utils/storage";
@@ -16,7 +14,7 @@ import { addPattern, type SavedPattern } from "@/utils/storage";
 const Index = () => {
   const seq = useSequencer();
   const [savedKey, setSavedKey] = useState<number>(0);
-  const [aiReason, setAiReason] = useState<string>("");
+  const [genrePickerOpen, setGenrePickerOpen] = useState(false);
 
   const activeGenre: Genre | null = useMemo(() => {
     return seq.state.activeGenreId ? (getGenre(seq.state.activeGenreId) ?? null) : null;
@@ -30,17 +28,8 @@ const Index = () => {
   const handlePickGenre = useCallback(
     (g: Genre) => {
       seq.loadGenre(g);
-      setAiReason("");
+      setGenrePickerOpen(false);
       toast.success(`Loaded ${g.name}`, { description: `${g.bpm} BPM · swing ${g.swing}%` });
-    },
-    [seq],
-  );
-
-  const handleAIMatch = useCallback(
-    (g: Genre, reason: string) => {
-      seq.loadGenre(g);
-      setAiReason(reason);
-      toast.success(`AI picked ${g.name}`, { description: reason });
     },
     [seq],
   );
@@ -102,15 +91,6 @@ const Index = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <a
-            href="https://github.com/Tonejs/Tone.js"
-            target="_blank"
-            rel="noreferrer"
-            className="chip transition-colors hover:text-foreground"
-          >
-            <Github className="h-3 w-3" />
-            Powered by Tone.js
-          </a>
           <span className="chip">
             <span className={seq.state.isPlaying ? "led" : "led-off"} />
             {seq.state.isPlaying ? "Live" : "Idle"}
@@ -118,82 +98,79 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Main grid */}
-      <main className="container mt-3 grid grid-cols-1 gap-3 sm:mt-5 sm:gap-4 lg:grid-cols-[1fr_320px]">
-        {/* Left column — Transport + Sequencer */}
-        <section className="flex flex-col gap-4">
-          <Transport
-            isPlaying={seq.state.isPlaying}
-            bpm={seq.state.bpm}
-            swing={seq.state.swing}
-            step={seq.state.step}
-            onTogglePlay={seq.togglePlay}
-            onStop={seq.stop}
-            onClear={handleClear}
-            onRandomize={handleRandomize}
-            onSave={handleSave}
-            onBpm={seq.setBpm}
-            onSwing={seq.setSwing}
-          />
+      {/* Main column */}
+      <main className="container mt-3 flex flex-col gap-3 sm:mt-5 sm:gap-4">
+        <Transport
+          isPlaying={seq.state.isPlaying}
+          bpm={seq.state.bpm}
+          swing={seq.state.swing}
+          step={seq.state.step}
+          onTogglePlay={seq.togglePlay}
+          onStop={seq.stop}
+          onClear={handleClear}
+          onRandomize={handleRandomize}
+          onSave={handleSave}
+          onBpm={seq.setBpm}
+          onSwing={seq.setSwing}
+          activeGenre={activeGenre}
+          genrePickerOpen={genrePickerOpen}
+          onToggleGenrePicker={() => setGenrePickerOpen((v) => !v)}
+          genrePicker={
+            <GenreSelector activeId={seq.state.activeGenreId} onPick={handlePickGenre} embedded />
+          }
+        />
 
-          {/* Sequencer grid */}
-          <div className="panel overflow-hidden">
-            {/* Horizontal scroll on sm+ only; mobile uses stacked track layout */}
-            <div className="sm:overflow-x-auto sm:scrollbar-thin">
-              <div className="sm:min-w-[520px]">
-                {/* Step ruler — only visible sm+ */}
-                <div className="hidden grid-cols-[240px_1fr] items-center gap-3 border-b border-white/5 bg-black/20 px-3 py-2 sm:grid lg:grid-cols-[260px_1fr]">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                    Tracks · {TRACKS.length}
-                  </span>
-                  <div className="grid grid-cols-16 gap-[3px] sm:gap-1.5">
-                    {Array.from({ length: 16 }, (_, i) => (
-                      <div
-                        key={i}
-                        className={`flex h-5 items-center justify-center font-mono text-[10px] tabular-nums ${
-                          seq.state.step === i ? "text-orange text-glow-orange" : "text-muted-foreground/60"
-                        } ${i % 4 === 0 ? "font-bold" : ""}`}
-                      >
-                        {i + 1}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="divide-y divide-white/[0.04]">
-                  {TRACKS.map((t) => (
-                    <TrackRow
-                      key={t.id}
-                      track={t}
-                      steps={seq.state.pattern[t.id]}
-                      state={seq.state.tracks[t.id]}
-                      currentStep={seq.state.step}
-                      sampleStatus={seq.state.sampleStatus[t.id]}
-                      anySolo={anySolo}
-                      onToggleStep={(idx) => seq.toggleStep(t.id, idx)}
-                      onToggleMute={() => seq.toggleMute(t.id)}
-                      onToggleSolo={() => seq.toggleSolo(t.id)}
-                      onVolume={(v) => seq.setTrackVolume(t.id, v)}
-                      onPreview={() => seq.previewTrack(t.id)}
-                    />
+        {/* Sequencer grid */}
+        <div className="panel overflow-hidden">
+          {/* Horizontal scroll on sm+ only; mobile uses stacked track layout */}
+          <div className="sm:overflow-x-auto sm:scrollbar-thin">
+            <div className="sm:min-w-[520px]">
+              {/* Step ruler — only visible sm+ */}
+              <div className="hidden grid-cols-[240px_1fr] items-center gap-3 border-b border-white/5 bg-black/20 px-3 py-2 sm:grid lg:grid-cols-[260px_1fr]">
+                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                  Tracks · {TRACKS.length}
+                </span>
+                <div className="grid grid-cols-16 gap-[3px] sm:gap-1.5">
+                  {Array.from({ length: 16 }, (_, i) => (
+                    <div
+                      key={i}
+                      className={`flex h-5 items-center justify-center font-mono text-[10px] tabular-nums ${
+                        seq.state.step === i ? "text-orange text-glow-orange" : "text-muted-foreground/60"
+                      } ${i % 4 === 0 ? "font-bold" : ""}`}
+                    >
+                      {i + 1}
+                    </div>
                   ))}
                 </div>
               </div>
+
+              <div className="divide-y divide-white/[0.04]">
+                {TRACKS.map((t) => (
+                  <TrackRow
+                    key={t.id}
+                    track={t}
+                    steps={seq.state.pattern[t.id]}
+                    state={seq.state.tracks[t.id]}
+                    currentStep={seq.state.step}
+                    sampleStatus={seq.state.sampleStatus[t.id]}
+                    anySolo={anySolo}
+                    onToggleStep={(idx) => seq.toggleStep(t.id, idx)}
+                    onToggleMute={() => seq.toggleMute(t.id)}
+                    onToggleSolo={() => seq.toggleSolo(t.id)}
+                    onVolume={(v) => seq.setTrackVolume(t.id, v)}
+                    onPreview={() => seq.previewTrack(t.id)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
+        </div>
 
-          <p className="px-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            Tip · Click a track label to preview · S = solo · speaker icon = mute
-          </p>
-        </section>
+        <p className="px-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          Tip · Click a track label to preview · S = solo · speaker icon = mute
+        </p>
 
-        {/* Right column — sidebar */}
-        <aside className="flex flex-col gap-4">
-          <AIPrompt onMatch={handleAIMatch} />
-          <GenreInfo genre={activeGenre} reason={aiReason} />
-          <GenreSelector activeId={seq.state.activeGenreId} onPick={handlePickGenre} />
-          <SavedPatterns refreshKey={savedKey} onLoad={handleLoadSaved} />
-        </aside>
+        <SavedPatterns refreshKey={savedKey} onLoad={handleLoadSaved} />
       </main>
 
       {/* Footer */}
