@@ -51,3 +51,7 @@ export function addPattern(p: Omit<SavedPattern, "id" | "createdAt">): SavedPatt
 export function removePattern(id: string) {
   savePatterns(loadPatterns().filter((p) => p.id !== id));
 }
+
+export function renamePattern(id: string, name: string) {
+  savePatterns(loadPatterns().map((p) => (p.id === id ? { ...p, name } : p)));
+}

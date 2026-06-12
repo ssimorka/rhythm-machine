@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, Eraser, Dice5, Save, LayoutGrid, X } from "lucide-react";
+import { Play, Pause, Eraser, Dice5, Save, LayoutGrid, FolderOpen, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import type { Genre } from "@/data/genres";
@@ -16,9 +16,15 @@ interface TransportProps {
   onBpm: (v: number) => void;
   onSwing: (v: number) => void;
   activeGenre: Genre | null;
+  // Genre Library
   genrePickerOpen: boolean;
   onToggleGenrePicker: () => void;
   genrePicker: React.ReactNode;
+  // Saved Patterns
+  savedPatternCount: number;
+  savedPickerOpen: boolean;
+  onToggleSavedPicker: () => void;
+  savedPicker: React.ReactNode;
 }
 
 export function Transport({
@@ -36,6 +42,10 @@ export function Transport({
   genrePickerOpen,
   onToggleGenrePicker,
   genrePicker,
+  savedPatternCount,
+  savedPickerOpen,
+  onToggleSavedPicker,
+  savedPicker,
 }: TransportProps) {
   return (
     <div className="panel flex flex-col gap-4 p-4">
@@ -43,7 +53,7 @@ export function Transport({
       {/* Play controls + Genre Info */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
 
-        {/* Play / Stop / LED */}
+        {/* Play / LED */}
         <div className="flex shrink-0 items-center gap-3">
           <motion.button
             type="button"
@@ -106,21 +116,45 @@ export function Transport({
         </AnimatePresence>
       </div>
 
-      {/* Genre Library toggle button */}
-      <motion.button
-        type="button"
-        whileTap={{ scale: 0.98 }}
-        onClick={onToggleGenrePicker}
-        className={cn(
-          "flex w-full items-center justify-center gap-2 rounded-xl border py-2.5 text-[13px] font-semibold transition-colors",
-          genrePickerOpen
-            ? "border-orange/50 bg-orange/10 text-orange"
-            : "border-orange/30 bg-orange/10 text-orange hover:bg-orange/15",
-        )}
-      >
-        {genrePickerOpen ? <X className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
-        {genrePickerOpen ? "Close" : "Genre Library"}
-      </motion.button>
+      {/* Genre Library + Saved Patterns toggle buttons */}
+      <div className="flex gap-2">
+        {/* Genre Library — ~62% width */}
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.98 }}
+          onClick={onToggleGenrePicker}
+          className={cn(
+            "flex flex-[3] items-center justify-center gap-2 rounded-xl border py-2.5 text-[13px] font-semibold transition-colors",
+            genrePickerOpen
+              ? "border-orange/50 bg-orange/10 text-orange"
+              : "border-orange/30 bg-orange/10 text-orange hover:bg-orange/15",
+          )}
+        >
+          {genrePickerOpen ? <X className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
+          {genrePickerOpen ? "Close" : "Genre Library"}
+        </motion.button>
+
+        {/* Saved Patterns — ~38% width */}
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.98 }}
+          onClick={onToggleSavedPicker}
+          className={cn(
+            "flex flex-[2] items-center justify-center gap-1.5 rounded-xl border py-2.5 text-[13px] font-semibold transition-colors",
+            savedPickerOpen
+              ? "border-orange/50 bg-orange/10 text-orange"
+              : "border-white/10 bg-white/[0.03] text-foreground/80 hover:border-white/20 hover:bg-white/[0.06]",
+          )}
+        >
+          {savedPickerOpen ? <X className="h-4 w-4" /> : <FolderOpen className="h-4 w-4" />}
+          <span className="truncate">
+            {savedPickerOpen
+              ? "Close"
+              : <>Saved <span className="text-muted-foreground">· {savedPatternCount}</span></>
+            }
+          </span>
+        </motion.button>
+      </div>
 
       {/* Inline genre picker */}
       <AnimatePresence>
@@ -134,6 +168,23 @@ export function Transport({
           >
             <div className="pt-1">
               {genrePicker}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Inline saved patterns picker */}
+      <AnimatePresence>
+        {savedPickerOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="pt-1">
+              {savedPicker}
             </div>
           </motion.div>
         )}

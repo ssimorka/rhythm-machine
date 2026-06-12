@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import simorkaLogo from "@/assets/simorka-logo.png";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -10,12 +10,27 @@ import { TrackRow } from "@/components/TrackRow";
 import { GenreSelector } from "@/components/GenreSelector";
 import { SavedPatterns } from "@/components/SavedPatterns";
 import { GENRES, getGenre, type Genre } from "@/data/genres";
-import { addPattern, type SavedPattern } from "@/utils/storage";
+import {
+  addPattern,
+  loadPatterns,
+  removePattern,
+  renamePattern,
+  type SavedPattern,
+} from "@/utils/storage";
 
 const Index = () => {
   const seq = useSequencer();
-  const [savedKey, setSavedKey] = useState<number>(0);
+
+  // ── Picker open/close (mutually exclusive) ───────────────────────────
   const [genrePickerOpen, setGenrePickerOpen] = useState(false);
+  const [savedPickerOpen, setSavedPickerOpen] = useState(false);
+
+  // ── Saved patterns list ──────────────────────────────────────────────
+  const [patterns, setPatterns] = useState<SavedPattern[]>(() => loadPatterns());
+
+  function refreshPatterns() {
+    setPatterns(loadPatterns());
+  }
 
   const activeGenre: Genre | null = useMemo(() => {
     return seq.state.activeGenreId ? (getGenre(seq.state.activeGenreId) ?? null) : null;
@@ -25,6 +40,14 @@ const Index = () => {
     () => Object.values(seq.state.tracks).some((t) => t.solo),
     [seq.state.tracks],
   );
+
+  // Refresh list whenever the save button increments it (via a side-effect
+  // triggered by the save handler itself).
+  useEffect(() => {
+    refreshPatterns();
+  }, []);
+
+  // ── Handlers ─────────────────────────────────────────────────────────
 
   const handlePickGenre = useCallback(
     (g: Genre) => {
@@ -51,7 +74,7 @@ const Index = () => {
       volumes,
       mutes,
     });
-    setSavedKey((k) => k + 1);
+    refreshPatterns();
     toast.success("Pattern saved", { description: "Stored in this browser." });
   }, [activeGenre, seq.state.bpm, seq.state.swing, seq.state.pattern, seq.state.tracks]);
 
@@ -64,6 +87,7 @@ const Index = () => {
         volumes: p.volumes,
         mutes: p.mutes,
       });
+      setSavedPickerOpen(false);
       if (seq.state.isPlaying) {
         toast.info(`Queued: ${p.name}`, { description: "Loads at the next bar." });
       } else {
@@ -72,6 +96,16 @@ const Index = () => {
     },
     [seq],
   );
+
+  const handleDeleteSaved = useCallback((id: string) => {
+    removePattern(id);
+    refreshPatterns();
+  }, []);
+
+  const handleRenameSaved = useCallback((id: string, name: string) => {
+    renamePattern(id, name);
+    refreshPatterns();
+  }, []);
 
   const handleRandomize = useCallback(() => {
     seq.randomize();
@@ -130,15 +164,31 @@ const Index = () => {
           onSwing={seq.setSwing}
           activeGenre={activeGenre}
           genrePickerOpen={genrePickerOpen}
-          onToggleGenrePicker={() => setGenrePickerOpen((v) => !v)}
+          onToggleGenrePicker={() => {
+            setSavedPickerOpen(false);
+            setGenrePickerOpen((v) => !v);
+          }}
           genrePicker={
             <GenreSelector activeId={seq.state.activeGenreId} onPick={handlePickGenre} embedded />
+          }
+          savedPatternCount={patterns.length}
+          savedPickerOpen={savedPickerOpen}
+          onToggleSavedPicker={() => {
+            setGenrePickerOpen(false);
+            setSavedPickerOpen((v) => !v);
+          }}
+          savedPicker={
+            <SavedPatterns
+              patterns={patterns}
+              onLoad={handleLoadSaved}
+              onDelete={handleDeleteSaved}
+              onRename={handleRenameSaved}
+            />
           }
         />
 
         {/* Sequencer grid */}
         <div className="panel overflow-hidden">
-          {/* Horizontal scroll on sm+ only; mobile uses stacked track layout */}
           <div className="sm:overflow-x-auto sm:scrollbar-thin">
             <div className="sm:min-w-[520px]">
               {/* Step ruler — only visible sm+ */}
@@ -185,8 +235,6 @@ const Index = () => {
         <p className="px-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
           Tip · Click a track label to preview · S = solo · speaker icon = mute
         </p>
-
-        <SavedPatterns refreshKey={savedKey} onLoad={handleLoadSaved} />
       </main>
 
       {/* Footer */}
