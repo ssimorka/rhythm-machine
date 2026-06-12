@@ -150,7 +150,7 @@ export function Transport({
           <span className="truncate">
             {savedPickerOpen
               ? "Close"
-              : <>Saved <span className="text-muted-foreground">· {savedPatternCount}</span></>
+              : <>My Patterns <span className="text-muted-foreground">· {savedPatternCount}</span></>
             }
           </span>
         </motion.button>
