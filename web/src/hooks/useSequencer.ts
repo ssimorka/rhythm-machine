@@ -3,6 +3,7 @@ import * as Tone from "tone";
 import { TRACKS, type DrumId, type Pattern, STEPS, emptyPattern } from "@/data/tracks";
 import { getEngine, type SampleStatus } from "@/lib/audio/engine";
 import { GENRES, type Genre } from "@/data/genres";
+import { loadSettings, saveSettings } from "@/utils/storage";
 
 export interface TrackState {
   volume: number; // dB
@@ -40,15 +41,41 @@ function defaultTracks(): Record<DrumId, TrackState> {
   return t;
 }
 
+/** Compute initial sequencer values from persisted settings or first-genre defaults. */
+function computeInitialState() {
+  const s = loadSettings();
+  const genre = s?.activeGenreId
+    ? (GENRES.find((g) => g.id === s.activeGenreId) ?? GENRES[0])
+    : GENRES[0];
+  const tracks: Record<DrumId, TrackState> = s?.tracks
+    ? (Object.fromEntries(
+        TRACKS.map((t) => {
+          const sv = s.tracks![t.id];
+          return [t.id, { volume: sv?.volume ?? 0, mute: sv?.mute ?? false, solo: false }];
+        }),
+      ) as Record<DrumId, TrackState>)
+    : defaultTracks();
+  return {
+    pattern: genre.pattern,
+    bpm: s?.bpm ?? genre.bpm,
+    swing: s?.swing ?? genre.swing,
+    activeGenreId: s?.activeGenreId ?? genre.id,
+    tracks,
+  };
+}
+
 export function useSequencer() {
-  const [pattern, setPattern] = useState<Pattern>(() => GENRES[0].pattern);
-  const [bpm, setBpm] = useState<number>(GENRES[0].bpm);
-  const [swing, setSwing] = useState<number>(GENRES[0].swing);
+  // Initialise from localStorage (runs once on mount via useState lazy init)
+  const [_init] = useState(computeInitialState);
+
+  const [pattern, setPattern] = useState<Pattern>(_init.pattern);
+  const [bpm, setBpm] = useState<number>(_init.bpm);
+  const [swing, setSwing] = useState<number>(_init.swing);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [step, setStep] = useState<number>(-1);
-  const [tracks, setTracks] = useState<Record<DrumId, TrackState>>(() => defaultTracks());
+  const [tracks, setTracks] = useState<Record<DrumId, TrackState>>(_init.tracks);
   const [sampleStatus, setSampleStatus] = useState<Partial<Record<DrumId, SampleStatus>>>({});
-  const [activeGenreId, setActiveGenreId] = useState<string | null>(GENRES[0].id);
+  const [activeGenreId, setActiveGenreId] = useState<string | null>(_init.activeGenreId);
   const [hasPendingLoad, setHasPendingLoad] = useState(false);
 
   // Refs to avoid stale closures inside Tone callbacks
@@ -327,6 +354,32 @@ export function useSequencer() {
     },
     [engine],
   );
+
+  // ── Apply persisted track state to engine on first mount ─────────────
+  // State is already initialised from localStorage; we just need to push
+  // volume/mute into the audio engine since it starts with defaults.
+  useEffect(() => {
+    for (const t of TRACKS) {
+      const s = tracksRef.current[t.id];
+      engine.setVolume(t.id, s.volume);
+      engine.setMute(t.id, s.mute);
+    }
+  }, [engine]);
+
+  // ── Persist settings to localStorage on every relevant change ─────────
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      saveSettings({
+        activeGenreId,
+        bpm,
+        swing,
+        tracks: Object.fromEntries(
+          TRACKS.map((t) => [t.id, { volume: tracks[t.id].volume, mute: tracks[t.id].mute }]),
+        ),
+      });
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [activeGenreId, bpm, swing, tracks]);
 
   // ── Cross-tab audio bleed fix (mobile Safari) ────────────────────────
   // When the tab goes to the background, suspend the raw AudioContext so

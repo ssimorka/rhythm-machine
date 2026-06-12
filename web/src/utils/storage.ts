@@ -1,6 +1,35 @@
 import type { Pattern } from "@/data/tracks";
 
 const KEY = "rhythm-machine:patterns:v1";
+const SETTINGS_KEY = "rhythm-machine:settings:v1";
+
+// ── App settings (persisted across page loads) ───────────────────────────────
+
+export interface AppSettings {
+  activeGenreId: string | null;
+  bpm: number;
+  swing: number;
+  /** Per-track volume (dB) and mute flags */
+  tracks: Partial<Record<string, { volume: number; mute: boolean }>>;
+}
+
+export function loadSettings(): AppSettings | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(SETTINGS_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as AppSettings;
+  } catch {
+    return null;
+  }
+}
+
+export function saveSettings(settings: AppSettings): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  } catch {}
+}
 
 export interface SavedPattern {
   id: string;

@@ -9,6 +9,7 @@ import { Transport } from "@/components/Transport";
 import { TrackRow } from "@/components/TrackRow";
 import { GenreSelector } from "@/components/GenreSelector";
 import { SavedPatterns } from "@/components/SavedPatterns";
+import { PatchNotesModal } from "@/components/PatchNotesModal";
 import { GENRES, getGenre, type Genre } from "@/data/genres";
 import {
   addPattern,
@@ -24,6 +25,7 @@ const Index = () => {
   // ── Picker open/close (mutually exclusive) ───────────────────────────
   const [genrePickerOpen, setGenrePickerOpen] = useState(false);
   const [savedPickerOpen, setSavedPickerOpen] = useState(false);
+  const [patchNotesOpen, setPatchNotesOpen] = useState(false);
 
   // ── Saved patterns list ──────────────────────────────────────────────
   const [patterns, setPatterns] = useState<SavedPattern[]>(() => loadPatterns());
@@ -135,8 +137,15 @@ const Index = () => {
             <h1 className="text-xl font-extrabold leading-none tracking-tight sm:text-2xl">
               Rhythm <span className="text-orange">Machine</span>
             </h1>
-            <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-              16-step boutique groovebox · v1.0
+            <p className="mt-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              16-step boutique groovebox ·
+              <button
+                type="button"
+                onClick={() => setPatchNotesOpen(true)}
+                className="chip cursor-pointer transition-colors hover:border-orange/30 hover:text-orange"
+              >
+                v1.1
+              </button>
             </p>
           </div>
         </div>
@@ -236,6 +245,8 @@ const Index = () => {
           Tip · Click a track label to preview · S = solo · speaker icon = mute
         </p>
       </main>
+
+      <PatchNotesModal open={patchNotesOpen} onClose={() => setPatchNotesOpen(false)} />
 
       {/* Footer */}
       <footer className="container mt-10 flex items-center justify-between border-t border-white/5 pt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
