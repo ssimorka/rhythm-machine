@@ -138,7 +138,7 @@ const Index = () => {
               Rhythm <span className="text-orange">Machine</span>
             </h1>
             <p className="mt-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-              16-step boutique groovebox ·
+              16-step boutique groovebox
               <button
                 type="button"
                 onClick={() => setPatchNotesOpen(true)}

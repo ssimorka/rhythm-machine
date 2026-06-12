@@ -124,7 +124,7 @@ export function Transport({
           whileTap={{ scale: 0.98 }}
           onClick={onToggleGenrePicker}
           className={cn(
-            "flex flex-[3] items-center justify-center gap-2 rounded-xl border py-2.5 text-[13px] font-semibold transition-colors",
+            "flex flex-1 items-center justify-center gap-2 rounded-xl border py-2.5 text-[13px] font-semibold transition-colors",
             genrePickerOpen
               ? "border-orange/50 bg-orange/10 text-orange"
               : "border-orange/30 bg-orange/10 text-orange hover:bg-orange/15",
@@ -140,7 +140,7 @@ export function Transport({
           whileTap={{ scale: 0.98 }}
           onClick={onToggleSavedPicker}
           className={cn(
-            "flex flex-[2] items-center justify-center gap-1.5 rounded-xl border py-2.5 text-[13px] font-semibold transition-colors",
+            "flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2.5 text-[13px] font-semibold transition-colors",
             savedPickerOpen
               ? "border-orange/50 bg-orange/10 text-orange"
               : "border-white/10 bg-white/[0.03] text-foreground/80 hover:border-white/20 hover:bg-white/[0.06]",
