@@ -328,6 +328,25 @@ export function useSequencer() {
     [engine],
   );
 
+  // ── Cross-tab audio bleed fix (mobile Safari) ────────────────────────
+  // When the tab goes to the background, suspend the raw AudioContext so
+  // the sequencer doesn't audibly bleed into other tabs.  On return,
+  // resume only if the user had it playing — Transport state is untouched
+  // throughout, so timing resumes exactly where it left off.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const rawCtx = Tone.getContext().rawContext as AudioContext;
+      if (document.visibilityState === "hidden") {
+        rawCtx.suspend().catch(() => {});
+      } else if (isPlayingRef.current) {
+        // Tab became visible again and the sequencer was running — restore audio.
+        rawCtx.resume().catch(() => {});
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {

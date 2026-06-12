@@ -295,6 +295,25 @@ export class AudioEngine {
   async start() {
     if (this.started) return;
     await Tone.start();
+
+    // ── iOS speaker-routing fix ───────────────────────────────────────────
+    // On iPhone, Web Audio defaults to the earpiece (phone-call route)
+    // unless we immediately push a buffer through the destination after the
+    // AudioContext resumes. Playing even a 1-sample silent buffer tells iOS
+    // to switch to the "media playback" audio session, which routes to the
+    // built-in loudspeaker.  This must happen right after Tone.start()
+    // resolves so we are still within the user-gesture microtask window.
+    try {
+      const ctx = Tone.getContext().rawContext as AudioContext;
+      const buf = ctx.createBuffer(1, 1, ctx.sampleRate);
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(ctx.destination);
+      src.start(0);
+    } catch {
+      // Non-fatal — some environments won't reach here, that's fine.
+    }
+
     this.started = true;
   }
 
